@@ -49,6 +49,12 @@ public class FuncionarioController {
 		return funcionarioRepository.save(funcionario);
 	}
 	
+	//Para gerar uma lista
+	@PostMapping("/lista")
+	public ResponseEntity<List<Funcionario>> criarLista(@Valid @RequestBody List<Funcionario> funcionarios){
+		return ResponseEntity.status(HttpStatus.CREATED).body(funcionarioRepository.saveAll(funcionarios));
+	}
+	
 	@PutMapping("/{id}")
 	public ResponseEntity<Funcionario>atualizar(@PathVariable Long id,@Valid @RequestBody Funcionario funcionario){
 		boolean funcionariosExists = funcionarioRepository.existsById(id);
