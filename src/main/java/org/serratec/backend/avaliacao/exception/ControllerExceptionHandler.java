@@ -20,11 +20,17 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+		
 		List<String> erros = new ArrayList<>();
 		for (FieldError er : ex.getBindingResult().getFieldErrors()) {
 			erros.add(er.getField() + ": " + er.getDefaultMessage());
 		}
-		return super.handleExceptionInternal(ex, erros, headers, status, request);
+		
+		ErroResposta erroResposta = new ErroResposta(
+				status.value(),"Existem campos inválidos ,confira o preenchimento ",
+				LocalDateTime.now(),erros);
+		
+		return super.handleExceptionInternal(ex, erroResposta , headers, status, request);
 	}
 
 	@Override
@@ -32,10 +38,10 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 			HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 
 		List<String> erros = new ArrayList<>();
-		erros.add("Valor de enumeração inválido: " + ex.getMostSpecificCause().getMessage());
+		erros.add("Erro de leitura do corpo da requisição: " + ex.getMostSpecificCause().getMessage());
 
 		ErroResposta erroResposta = new ErroResposta(status.value(),
-				"Existem campos inválidos ,confira o preenchimento ", LocalDateTime.now(), erros);
+				"Existem campos inválidos ,verifique se os dados estão corretos", LocalDateTime.now(), erros);
 
 		return super.handleExceptionInternal(ex, erroResposta, headers, status, request);
 	}
